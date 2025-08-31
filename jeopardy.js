@@ -95,23 +95,19 @@ function handleClickOfPlay() {
  * - The game play is managed via events.
  */
 async function setupTheGame() {
-  // todo show the spinner while setting up the game
   $("#spinner").show();
-  // todo reset the DOM (table, button text, the end text)
   $("#categories").empty(); // Clear table headers
   $("#clues").empty(); // Clear table body
   $("#play").text("Restart the Game!"); // Reset play button text
   $("#active-clue").html(""); // Clear the active clue area
 
-  // todo fetch the game data (categories with clues)
   const categoryIds = await getCategoryIds();
-  console.log(categoryIds);
   categories = [];
   for (let id of categoryIds) {
     const catData = await getCategoryData(id);
     categories.push(catData);
   }
-  // todo fill the table
+
   fillTable(categories);
   $("#spinner").hide();
   $("#clues").show(); // Show the clues table after filling it
@@ -126,15 +122,12 @@ async function setupTheGame() {
  * - Request as many categories as possible, such as 100. Randomly pick as many categories as given in the `NUMBER_OF_CATEGORIES` constant, if the number of clues in the category is enough (<= `NUMBER_OF_CLUES` constant).
  */
 async function getCategoryIds() {
-  const ids = []; // todo set after fetching
   const response = await fetch(`${API_URL}categories?limit=100`); // Fetch more categories than needed
   const data = await response.json();
 
-  const filteredCategories = data.filter(
-    (cat) => cat.clues_count >= NUMBER_OF_CLUES_PER_CATEGORY
-  );
-
-  return filteredCategories.map((cat) => cat.id);
+  return data
+    .filter((cat) => cat.clues_count >= NUMBER_OF_CLUES_PER_CATEGORY)
+    .map((cat) => cat.id);
 }
 
 /**
@@ -160,7 +153,6 @@ async function getCategoryIds() {
  * - In the API, not all clues have a value. You can assign your own value or skip that clue.
  */
 async function getCategoryData(categoryId) {
-  // todo fetch the category with NUMBER_OF_CLUES_PER_CATEGORY amount of clues
   const response = await fetch(`${API_URL}category?id=${categoryId}`);
   const data = await response.json();
   const categoryWithClues = {
@@ -242,7 +234,6 @@ function fillTable(categories) {
  *
  */
 function handleClickOfClue(event) {
-  // todo find and remove the clue from the categories
   if (activeClueMode === 0) {
     const $td = $(event.currentTarget);
     const idParts = $td.attr("id").split("-");
@@ -292,11 +283,6 @@ $("#active-clue").on("click", handleClickOfActiveClue);
  * - Don't forget to update the `activeClueMode` variable.
  */
 function handleClickOfActiveClue(event) {
-  // todo display answer if displaying a question
-
-  // todo clear if displaying an answer
-  // todo after clear end the game when no clues are left
-
   if (activeClueMode === 1) {
     activeClueMode = 2;
     $("#active-clue").html(activeClue.answer);
